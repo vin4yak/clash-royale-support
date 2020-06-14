@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clash_royale_support/domain/deck.dart';
 import 'package:clash_royale_support/util/progress_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +15,23 @@ class FavoriteDeck extends StatefulWidget {
 class FavoriteDeckState extends State<FavoriteDeck> {
 
   bool isInProgress = true;
-  final db = Firestore.instance;
+  var db = Firestore.instance;
+  var decks = new List();
 
   _getFavoriteDecks() {
     db.collection("cr-top-decks").getDocuments()
-        .then((snapshot) => snapshot.documents.forEach((element) {
-          print(element.data);
-    }));
-    isInProgress = false;
+        .then((snapshot) {
+          setState(() {
+            snapshot.documents.forEach((element) {
+              decks.add(new Deck(element['deckId'], element['name'],
+                  element['elixirCost'], element['winPercentage'], element['slot1'],
+                  element['slot2'], element['slot3'], element['slot4'],
+                  element['slot5'], element['slot6'], element['slot7'],
+                  element['slot8'], element['link'], element['avatar']));
+            });
+            isInProgress = false;
+          });
+    });
   }
   
   @override
@@ -38,19 +49,17 @@ class FavoriteDeckState extends State<FavoriteDeck> {
   Widget build(BuildContext context) {
     return ProgressBar(
       child: ListView.builder(
-          itemCount: 1,
+          itemCount: decks.length,
           itemBuilder: (context, index) {
             return Card(
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage('https://cdn.royaleapi.com/static/img/cards-150/hog-rider.png'),
-                ),
-                title: Text('Hog 2.6'),
-                subtitle: Text('Ice Spirit, Skeletons, Log, Ice Golem, '
-                    'Musketeer, Hog, Fireball, Tesla'),
+                leading: CachedNetworkImage(imageUrl: decks[index].avatar),
+                title: Text(decks[index].name),
+                subtitle: Text('Elixir Cost: ' + decks[index].elixirCost +
+                '\nWin Percentage: ' + decks[index].winPercentage),
                 trailing: Icon(Icons.open_in_new),
                 onTap: () {
-                  launch('clashroyale://copyDeck?deck=26000010;28000011;26000038;26000030;27000000;26000014;26000021;28000000');
+                  launch(decks[index].link);
                 },
               ),
             );

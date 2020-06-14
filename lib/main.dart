@@ -1,19 +1,23 @@
 import 'package:clash_royale_support/tab/favorite_deck.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
+void main() => runApp(ClashRoyaleSupport());
+
+class ClashRoyaleSupport extends StatefulWidget {
+  // This widget is the root of your application.
+  @override
+  _ClashRoyaleSupportState createState() => _ClashRoyaleSupportState();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _ClashRoyaleSupportState extends State<ClashRoyaleSupport> {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
+        accentColor: Colors.indigo,
         brightness: Brightness.dark,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
